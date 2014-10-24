@@ -1,13 +1,29 @@
 package umlmaster2.metrics;
 
 import java.util.ArrayList;
-import java.util.regex.Matcher;
 
-public class DIT extends Metrica{
-	public ArrayList<String> name;
-	private final String[] searchs = new String[]{"generalization", "general"};
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+public class DIT {
 
-		// TODO Auto-generated constructor stub
+
+
+public DIT(ArrayList <Classe> classes){
 	
+	for (Classe classe  : classes) {
+		 
+		String  id = classe.select("[xmi:type=\"uml:Generalization\"]").attr("general");
+		
+		
+ 		
+		 for (Classe classe1 : classes) {
+			classe1.DIT = classe1.select("[xmi:id:" +id+"]").size();
+		    
+		}
+		
+
+	}
+
+}
 
 }
