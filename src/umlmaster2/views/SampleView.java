@@ -4,6 +4,7 @@ package umlmaster2.views;
 import java.io.File;
 import java.io.IOException;
 
+import umlmaster2.metrics.Classe;
 import umlmaster2.monitor.*;
 
 import org.eclipse.swt.widgets.Composite;
@@ -31,6 +32,11 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 
 
 /**
@@ -113,7 +119,7 @@ public class SampleView extends ViewPart {
 	          
 		      parent = parent1;
 		      RowLayout rowlayout = new RowLayout();
-		       container = new StyledText(this.parent, 0);
+		       container = new StyledText(parent, 0);
 		      rowlayout.type = SWT.VERTICAL;
         IWorkspace work = ResourcesPlugin.getWorkspace();
         IResourceChangeListener listener = new IResourceChangeListener() {
@@ -127,14 +133,34 @@ public class SampleView extends ViewPart {
         		//container.append(recurso3[0].getFullPath().toString());
         		IResource resource = root.findMember(new Path("/"));
         		IContainer contain = (IContainer) resource;
-        		try {
-					container.append(new SimpleReadFile(contain.getFile(recurso3[0].getFullPath()).getLocationURI()).getText());
+        		
+        		
+				try {
+					
+					File input = new File("/home/joney/Downloads/model.uml");
+
+					Document doc = Jsoup.parse(input , "UTF-8");
+					
+					Elements classes = doc.select("packagedElement[xmi:type=\"uml:Class\"]");
+					System.out.println("tamanho!" + classes.size());
+					for (Element classe  : classes) {
+		        		Classe cla = new Classe(classe);
+		        		
+		        	   container.append("\n\t"+ cla.getNOC());
+		        	   container.append("\n\t"+ cla.getCBO());
+		        		}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				
-				} 
-        		viewer.setInput(getSite());
+				}
+        		
+        			
+        		
+        			
+        			
+        		
+			
+        		
         		
         	 }
 
@@ -143,7 +169,7 @@ public class SampleView extends ViewPart {
            
         work.addResourceChangeListener(listener);
         parent.setLayout(rowlayout);
-       
+        
         
         container.append("DIT    -3\n");
         
@@ -166,7 +192,7 @@ public class SampleView extends ViewPart {
 		 color1 = new Color(device, 230, 40, 40);
 		
 		 parent.setBackground(new Color(device , 10,10,10));
-		
+	     
 		 container.setEditable(false);
 		container.setCaret(null);;
 		container.append("CBO  -4");
@@ -195,6 +221,6 @@ public class SampleView extends ViewPart {
 	 * Passing the focus request to the viewer's control.
 	 */
 	public void setFocus() {
-		viewer.getControl().setFocus();
+		
 	}
 }
