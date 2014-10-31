@@ -1,6 +1,7 @@
-package umlmaster2.metrics;
+package aprendizado;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Tag;
@@ -11,24 +12,32 @@ private String Name;
 public int DIT ;
 private int NOC ;
 private int CBO ;
-private static ArrayList<Element> elementos = new ArrayList<>();
+private static HashMap<Element,Classe> elementos_classe = new HashMap<>();
 private Element element ; 
-public Classe(Element ele) {
+private Classe(Element ele) {
 	   element = ele ; 
-	   elementos.add(ele) ;
+	   elementos_classe.put(element, this);
 		// TODO Auto-generated constructor stub
 	}
 public int  getNOC() {
 	String id = element.select("[xmi:type=\"uml:Generalization\"]").attr("general");
-    
+    return 5 ;
 }
-
+public static Classe getInstanceNotEqualOther(Element ele){
+	if (elementos_classe.containsKey(ele)){
+	    return elementos_classe.get(ele);
+	}
+	else   
+	    return new Classe(ele);
+	
+}
 public int getCBO(){
 	Elements elementos_cbo = element.select("ownedAttribute[association]");
+	
 	for (Element ele  :elementos_cbo) {
-		
-		Classe classe = new Classe(ele); 
-		
+	
+		Classe classe = Classe.getInstanceNotEqualOther(ele); 
+		classe.CBO ++ ;
 	}
 		return CBO + element.select("ownedAttribute[association]").size();
 }
