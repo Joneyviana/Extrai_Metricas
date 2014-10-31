@@ -143,11 +143,12 @@ public class SampleView extends ViewPart {
 					
 					Elements classes = doc.select("packagedElement[xmi:type=\"uml:Class\"]");
 					System.out.println("tamanho!" + classes.size());
+					container.setText("");
 					for (Element classe  : classes) {
-		        		Classe cla = new Classe(classe);
-		        		
-		        	   container.append("\n\t"+ cla.getNOC());
-		        	   container.append("\n\t"+ cla.getCBO());
+		        		Classe cla = Classe.getInstanceNotEqualOther(classe);
+		        	   container.append("\n"+ cla.getName());	
+		        	   container.append("\n\t NOC: "+ cla.getNOC());
+		        	   container.append("\n\t CBO: "+ cla.getCBO());
 		        		}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -155,7 +156,7 @@ public class SampleView extends ViewPart {
 				}
         		
         			
-        		
+        		container.pack();
         			
         			
         		

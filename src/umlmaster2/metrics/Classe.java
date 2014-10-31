@@ -1,4 +1,4 @@
-package aprendizado;
+package umlmaster2.metrics;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +21,10 @@ private Classe(Element ele) {
 	}
 public int  getNOC() {
 	String id = element.select("[xmi:type=\"uml:Generalization\"]").attr("general");
-    return 5 ;
+    if (id.isEmpty()){
+    	return 0 ;
+    }
+	return element.parent().select("generalization[general="+id+"]").size();
 }
 public static Classe getInstanceNotEqualOther(Element ele){
 	if (elementos_classe.containsKey(ele)){
@@ -32,14 +35,11 @@ public static Classe getInstanceNotEqualOther(Element ele){
 	
 }
 public int getCBO(){
-	Elements elementos_cbo = element.select("ownedAttribute[association]");
+	String id = element.attr("xmi:id");
+	int  elementos_cbo = element.parent().select("ownedAttribute[type="+id+"]").size();
 	
-	for (Element ele  :elementos_cbo) {
-	
-		Classe classe = Classe.getInstanceNotEqualOther(ele); 
-		classe.CBO ++ ;
-	}
-		return CBO + element.select("ownedAttribute[association]").size();
+	    
+		return  elementos_cbo + element.select("ownedAttribute[association]").size();
 }
 
 public String getName() {
