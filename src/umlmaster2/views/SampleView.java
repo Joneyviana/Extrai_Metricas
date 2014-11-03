@@ -3,6 +3,7 @@ package umlmaster2.views;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 import umlmaster2.metrics.Classe;
 import umlmaster2.monitor.*;
@@ -11,6 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
 import org.eclipse.core.internal.events.ResourceDelta;
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -64,11 +66,11 @@ public class SampleView extends ViewPart {
 	 */
 	public static final String ID = "umlmaster2.views.SampleView";
 	ListViewer viewer;
-
+    private URI arquivo_uml ;
 	private Action action1;
 	private Action action2;
 	private Action doubleClickAction;
-   
+	private IWorkspaceRoot root;
     private Color color;
     private Color color1 ;
     private Device device;
@@ -123,27 +125,32 @@ public class SampleView extends ViewPart {
 		      rowlayout.type = SWT.VERTICAL;
         IWorkspace work = ResourcesPlugin.getWorkspace();
         IResourceChangeListener listener = new IResourceChangeListener() {
-        	 public void resourceChanged(IResourceChangeEvent event) {
-        		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+        	 
+
+			
+
+			private IResource resource;
+
+			public void resourceChanged(IResourceChangeEvent event) {
+        		root = ResourcesPlugin.getWorkspace().getRoot();
         		IResourceDelta[]  recurso  = event.getDelta().getAffectedChildren();
         		
-        		IResourceDelta[]  recurso1  = recurso[0].getAffectedChildren();
-        		IResourceDelta[]  recurso2  = recurso1[0].getAffectedChildren();
-        		IResourceDelta[]  recurso3  = recurso2[0].getAffectedChildren();
-        		//container.append(recurso3[0].getFullPath().toString());
-        		IResource resource = root.findMember(new Path("/"));
-        		IContainer contain = (IContainer) resource;
+        		//make_path(recurso);
+        	
+        		container.append(recurso[0].getFullPath().toString());
+        		
         		
         		
 				try {
 					
-					File input = new File("/home/joney/Downloads/model.uml");
+					File input = new File(arquivo_uml);
 
 					Document doc = Jsoup.parse(input , "UTF-8");
 					
 					Elements classes = doc.select("packagedElement[xmi:type=\"uml:Class\"]");
 					System.out.println("tamanho!" + classes.size());
 					container.setText("");
+					
 					for (Element classe  : classes) {
 		        		Classe cla = Classe.getInstanceNotEqualOther(classe);
 		        	   container.append("\n"+ cla.getName());	
@@ -165,6 +172,22 @@ public class SampleView extends ViewPart {
         		
         	 }
 
+			private void  make_path(IResourceDelta[]  recurso) {
+				IResourceDelta[]  recurso1  = recurso[0].getAffectedChildren();
+				if (recurso1[0].getFullPath().getFileExtension().equals("uml")){
+					resource = root.findMember(new Path("/"));
+        		    IContainer contain = (IContainer) resource;
+					IFile file = contain.getFile(new Path(recurso1[0].getFullPath().toString()));
+			        arquivo_uml =  file.getLocationURI();
+				}
+				else {
+				if (recurso1.length!=0){
+					 make_path(recurso1);
+			   }
+			
+				}
+				}
+                 
 		
            };
            
