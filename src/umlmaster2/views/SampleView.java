@@ -22,6 +22,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.*;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Color;
@@ -86,6 +87,7 @@ public class SampleView extends ViewPart {
 	 * it and always show the same content 
 	 * (like Task List, for example).
 	 */
+	private StyleRange range;
 	 
 	//class ViewContentProvider implements IStructuredContentProvider {
 		//public void inputChanged(Viewer v, Object oldInput, Object newInput) {
@@ -121,7 +123,12 @@ public class SampleView extends ViewPart {
 	          
 		      parent = parent1;
 		      RowLayout rowlayout = new RowLayout();
-		       container = new StyledText(parent, 0);
+		      ScrolledComposite comp = new ScrolledComposite(parent.getParent(), SWT.V_SCROLL) ;
+		      parent.setSize(0, 0);
+		      parent.setParent(comp);
+		      container = new StyledText(comp, 0);
+		      container.setSize(400, 400);
+		      comp.setContent(container);
 		      rowlayout.type = SWT.VERTICAL;
         IWorkspace work = ResourcesPlugin.getWorkspace();
         IResourceChangeListener listener = new IResourceChangeListener() {
@@ -130,14 +137,19 @@ public class SampleView extends ViewPart {
 			
 
 			private IResource resource;
+			private StyleRange range1;
+			private StyleRange range;
+			private StyleRange corname;
+			private StyleRange range2;
 
 			public void resourceChanged(IResourceChangeEvent event) {
-        		root = ResourcesPlugin.getWorkspace().getRoot();
+        	
+				root = ResourcesPlugin.getWorkspace().getRoot();
         		IResourceDelta[]  recurso  = event.getDelta().getAffectedChildren();
         		
-        		//make_path(recurso);
+        		make_path(recurso);
         	
-        		container.append(recurso[0].getFullPath().toString());
+        		
         		
         		
         		
@@ -151,13 +163,32 @@ public class SampleView extends ViewPart {
 					System.out.println("tamanho!" + classes.size());
 					container.setText("");
 					
+					int lastchar = 0;
 					for (Element classe  : classes) {
 		        		Classe cla = Classe.getInstanceNotEqualOther(classe);
-		        	   container.append("\n"+ cla.getName());	
-		        	   container.append("\n\t NOC: "+ cla.getNOC());
-		        	   container.append("\n\t CBO: "+ cla.getCBO());
+		        		if ((cla.getCBO()>=2)||(cla.getNOC()>=2)){ 
+		        			setcolorRangeLine(color1, cla.getName()+"\n");
+		        		    System.out.println("sim vermelho");
 		        		}
-				} catch (IOException e) {
+		        		    else 
+		        		setcolorRangeLine(color, cla.getName()+"\n");
+		        		if (cla.getNOC()>=2) 
+		        		setcolorRangeLine(color1, "\t NOC: "+ cla.getNOC()+"\n");
+		        		else
+		        			setcolorRangeLine(color, "\t NOC: "+ cla.getNOC()+"\n");
+		        		if (cla.getCBO()>=2) 
+		        		setcolorRangeLine(color1 ,"\t CBO: "+ cla.getCBO()+"\n");
+		        	     
+		        		else 
+		        			setcolorRangeLine(color ,"\t CBO: "+ cla.getCBO()+"\n");
+		        			
+		        			
+		        	
+			        	 
+		        		 
+		        			
+				          
+					} }catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -179,6 +210,7 @@ public class SampleView extends ViewPart {
         		    IContainer contain = (IContainer) resource;
 					IFile file = contain.getFile(new Path(recurso1[0].getFullPath().toString()));
 			        arquivo_uml =  file.getLocationURI();
+				   System.out.println(file.getLocationURI());
 				}
 				else {
 				if (recurso1.length!=0){
@@ -215,18 +247,12 @@ public class SampleView extends ViewPart {
 		 color = new Color(device, 80, 180, 80);
 		 color1 = new Color(device, 230, 40, 40);
 		
-		 parent.setBackground(new Color(device , 10,10,10));
+		comp.setBackground(new Color(device , 10,10,10));
 	     
 		 container.setEditable(false);
 		container.setCaret(null);;
-		container.append("CBO  -4");
-		
-		StyleRange range1 = new StyleRange(0, "DIT    -3\n".length(), color,null);
-		container.setStyleRange(range1);
-		StyleRange range = new StyleRange("DIT    -3\n".length(), "CBO  -4".length(), color1,null);
-		container.setStyleRange(range);
-		
-		
+	
+		container.setBackground(new Color(device , 10,10,10));
 	}      
         
 	    
@@ -241,6 +267,13 @@ public class SampleView extends ViewPart {
 
 	
 
+	protected void setcolorRangeLine(Color color2, String line) {
+		int lastchar = container.getCharCount();
+		container.append(line);
+		range = new StyleRange(lastchar, container.getCharCount()-lastchar, color2,null);
+		container.setStyleRange(range);
+		
+	}
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
