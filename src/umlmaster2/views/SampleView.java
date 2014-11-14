@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URI;
 
 import umlmaster2.metrics.Classe;
+import umlmaster2.metrics.extendmetricas;
 import umlmaster2.monitor.*;
 
 import org.eclipse.swt.widgets.Composite;
@@ -162,28 +163,23 @@ public class SampleView extends ViewPart {
 					Elements classes = doc.select("packagedElement[xmi:type=\"uml:Class\"]");
 					System.out.println("tamanho!" + classes.size());
 					container.setText("");
-					
+					container.setLineSpacing(3);
 					int lastchar = 0;
 					for (Element classe  : classes) {
-		        		Classe cla = Classe.getInstanceNotEqualOther(classe);
+		        		Classe cl = Classe.getInstanceNotEqualOther(classe);
+		        		extendmetricas cla  = new extendmetricas(cl);
 		        		if ((cla.getCBO()>=2)||(cla.getNOC()>=2)){ 
-		        			setcolorRangeLine(color1, cla.getName()+"\n");
+		        			setcolorRangeLine(color1, "\n"+cla.getName()+"\n");
 		        		    System.out.println("sim vermelho");
 		        		}
 		        		    else 
-		        		setcolorRangeLine(color, cla.getName()+"\n");
-		        		if (cla.getNOC()>=2) 
-		        		setcolorRangeLine(color1, "\t NOC: "+ cla.getNOC()+"\n");
-		        		else
-		        			setcolorRangeLine(color, "\t NOC: "+ cla.getNOC()+"\n");
-		        		if (cla.getCBO()>=2) 
-		        		setcolorRangeLine(color1 ,"\t CBO: "+ cla.getCBO()+"\n");
-		        	     
-		        		else 
-		        			setcolorRangeLine(color ,"\t CBO: "+ cla.getCBO()+"\n");
-		        			
-		        			
-		        	
+		        		setcolorRangeLine(color, "\n"+cla.getName()+"\n");
+		        		Decision_color(2,cla.getNOC(),"\t NOC: ");
+		        		Decision_color(2,cla.getCBO(),"\t CBO: ");
+		        		Decision_color(2,cla.getDIT(),"\t  DIT: ");
+		        		Decision_color(2,cla.getCS(),"\t CS: ");	
+		        		Decision_color(2,cla.getNOO(),"\t  NOO: ");	
+		        		Decision_color(2,cla.getNOA(),"\t  NOA: ");
 			        	 
 		        		 
 		        			
@@ -267,6 +263,14 @@ public class SampleView extends ViewPart {
 
 	
 
+	protected void Decision_color(int restricao, int valor  , String string) {
+		if (valor>=restricao) 
+    		setcolorRangeLine(color1 ,string + valor);
+    	     
+    		else 
+    			setcolorRangeLine(color ,string+ valor);
+		
+	}
 	protected void setcolorRangeLine(Color color2, String line) {
 		int lastchar = container.getCharCount();
 		container.append(line);
