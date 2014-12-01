@@ -1,4 +1,4 @@
-package umlmaster2.editors;
+package editor.editors;
 
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -83,7 +83,7 @@ public class MultiPageEditorContributor extends MultiPageEditorActionBarContribu
 	private void createActions() {
 		sampleAction = new Action() {
 			public void run() {
-				MessageDialog.openInformation(null, "UMLMaster2", "Sample Action Executed");
+				MessageDialog.openInformation(null, "Capeta", "Sample Action Executed");
 			}
 		};
 		sampleAction.setText("Sample Action");

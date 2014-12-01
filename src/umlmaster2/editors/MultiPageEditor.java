@@ -1,11 +1,14 @@
-package umlmaster2.editors;
+package editor.editors;
 
+import org.eclipse.swt.graphics.Rectangle;
 
 import java.io.StringWriter;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.StringTokenizer;
+
+import javax.sound.sampled.Line;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -15,22 +18,45 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.LineAttributes;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FontDialog;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tracker;
 import org.eclipse.ui.*;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.ide.IDE;
+import org.w3c.dom.css.Rect;
 
 /**
  * An example showing how to create a multi-page editor.
@@ -44,13 +70,25 @@ import org.eclipse.ui.ide.IDE;
 public class MultiPageEditor extends MultiPageEditorPart implements IResourceChangeListener{
 
 	/** The text editor used in page 0. */
+	private ArrayList <Ponto> risco = new ArrayList<>();
+    private ArrayList <linha> Menu = new ArrayList<>();
+	private Ponto posicao_direita_inicio;
 	private TextEditor editor;
-
+	private boolean pressionado;
+	
 	/** The font chosen in page 1. */
 	private Font font;
 
 	/** The text widget used in page 2. */
+	private Color color;
+	private ArrayList<retangulo> retangulos = new ArrayList<>();
+	private int Count = 0 ;
 	private StyledText text;
+	private Canvas canvas;
+	private Button fontButton;
+	private Point ponto_anterior;
+	private Display display ;
+	private Style style = new AssociacaoSimples();
 	/**
 	 * Creates a multi-page editor example.
 	 */
@@ -80,28 +118,168 @@ public class MultiPageEditor extends MultiPageEditorPart implements IResourceCha
 	 * which allows you to change the font used in page 2.
 	 */
 	void createPage1() {
-
-		Composite composite = new Composite(getContainer(), SWT.NONE);
+         style = new heranca() ;
+		 canvas = new Canvas(getContainer(), SWT.NONE);
 		GridLayout layout = new GridLayout();
-		composite.setLayout(layout);
+		canvas.setLayout(layout);
 		layout.numColumns = 2;
-
-		Button fontButton = new Button(composite, SWT.NONE);
-		GridData gd = new GridData(GridData.BEGINNING);
-		gd.horizontalSpan = 2;
-		fontButton.setLayoutData(gd);
-		fontButton.setText("Change Font...");
+	    
+		int count = 0;
 		
-		fontButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				setFont();
+				canvas.addPaintListener(new PaintListener() {
+			          private PaintEvent eventodesenho;
+			         
+			          public void paintControl(PaintEvent e) {
+			        	e.gc.setLineAttributes(new LineAttributes(3));
+			        	e.gc.textExtent("fdf");
+			            
+			        	e.gc.setBackground(e.display.getSystemColor(SWT.COLOR_YELLOW));
+			            e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_BLACK));
+			            display = e.display;
+			            
+			      
+			            
+			           
+			            for (linha line : Menu){
+			            	    
+              
+			         e.gc.drawLine( line.ponto.x, line.ponto.y, line.ponto_fim.x,line.ponto_fim.y );
+			         if (line.ponto.equals(line.ponto_fim)==false){
+			        	
+			        	 line.style_linha.addfeature(e.gc, line.ponto,line.ponto_fim);
+			         }
+			           
+			            }
+				
+			}
+		
+		
+	});
+	
+	
+		Listener listener = new Listener() {
+            int count = 0;
+        	public void handleEvent(Event e) {
+             
+            	count +=1;
+            	if ((pressionado == true)&&(count%4==0)){
+            	Ponto ponto = new Ponto();	
+            	ponto.x = e.x ;
+            	ponto.y = e.y ;
+                risco.add(ponto);
+            	if (Menu.isEmpty()==false){
+                Menu.get(Menu.size()-1).ponto.x = risco.get(risco.size()-1).x;
+            	Menu.get(Menu.size()-1).ponto.y = risco.get(risco.size()-1).y;
+            	Menu.get(Menu.size()-1).ponto_fim.x = risco.get(0).x;
+            	Menu.get(Menu.size()-1).ponto_fim.y = risco.get(0).y ;
+            	canvas.redraw();
+            	}
+            	}
+            
+            }
+            };
+        canvas.addListener(SWT.MouseDown, new	Listener() {
+			
+			
+
+			@Override
+			public void handleEvent(Event arg0) {
+				System.out.print("que capeta é esse");
+				linha line = new linha();
+				line.setstyle(style);
+				line.ponto = new Ponto();
+				line.ponto_fim =  new Ponto();
+				risco.clear();
+				Menu.add(line);
+				if(arg0.button == 3){
+					System.out.print("e de direito");
+				    posicao_direita_inicio = new Ponto() ;
+					posicao_direita_inicio.x = arg0.x ;
+				    posicao_direita_inicio.y = arg0.y ;
+				}
+				else{    	
+				pressionado = true ;
+				}
 			}
 		});
-
-		int index = addPage(composite);
+        canvas.addListener(SWT.MouseMove, listener);
+        canvas.addListener(SWT.MouseUp, new Listener() {
+			
+			@Override
+			public void handleEvent(Event arg0) {
+				pressionado = false ;
+				
+			}
+		});
+       
+		
+         
+         int index = addPage(canvas);
 		setPageText(index, "Properties");
+		  Menu popupMenu = new Menu(canvas);
+		  
+		  MenuItem newItem = new MenuItem(popupMenu, SWT.NONE);
+		    newItem.setText("Class");
+		    newItem.addSelectionListener(new SelectionListener() {
+				
+				@Override
+				public void widgetSelected(SelectionEvent arg0) {
+				
+							retangulo ret = new retangulo(canvas,SWT.NONE );
+                            ret.definir_ponto(posicao_direita_inicio.x, posicao_direita_inicio.y);
+							retangulos.add(ret);  
+                            
+                            
+							int x1 = canvas.getSize().x;
+							int y1 = canvas.getSize().y ;
+							
+							canvas.pack();
+						    canvas.setSize(x1, y1);
+							
+							canvas.layout(true);
+							canvas.redraw();
+							
+							
+							
+					};
+					
+							
+							
+							
+							
+				
+				
+				@Override
+				public void widgetDefaultSelected(SelectionEvent arg0) {
+					
+					
+				}
+			});
+		
+				
+			
+				
+				
+					
+			
+		    MenuItem refreshItem = new MenuItem(popupMenu, SWT.CASCADE);
+		    refreshItem.setText("Line style");
+		   
+		    Menu lineMenu  = new Menu(popupMenu);
+		    refreshItem.setMenu(lineMenu);
+
+		    MenuItem shortcutItem = new MenuItem(lineMenu, SWT.NONE);
+		    shortcutItem.setText("herança");
+		    MenuItem iconItem = new MenuItem(lineMenu, SWT.NONE);
+		    iconItem.setText("Associação Simples");
+		    MenuItem deleteItem = new MenuItem(popupMenu, SWT.NONE);
+		    deleteItem.setText("Delete");
+	
+		    canvas.setMenu(popupMenu);
 	}
-	/**
+	
+
+/**
 	 * Creates page 2 of the multi-page editor,
 	 * which shows the sorted text.
 	 */
@@ -119,9 +297,9 @@ public class MultiPageEditor extends MultiPageEditorPart implements IResourceCha
 	 * Creates the pages of the multi-page editor.
 	 */
 	protected void createPages() {
-		createPage0();
+		//createPage0();
 		createPage1();
-		createPage2();
+		//createPage2();
 	}
 	/**
 	 * The <code>MultiPageEditorPart</code> implementation of this 
@@ -135,6 +313,7 @@ public class MultiPageEditor extends MultiPageEditorPart implements IResourceCha
 	/**
 	 * Saves the multi-page editor's document.
 	 */
+	
 	public void doSave(IProgressMonitor monitor) {
 		getEditor(0).doSave(monitor);
 	}
