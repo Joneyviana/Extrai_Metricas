@@ -10,6 +10,7 @@ import umlmaster2.metrics.extendmetricas;
 import umlmaster2.monitor.*;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.*;
 import org.eclipse.core.internal.events.ResourceDelta;
 import org.eclipse.core.resources.IContainer;
@@ -30,6 +31,9 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.GCData;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -89,6 +93,7 @@ public class SampleView extends ViewPart {
 	 * (like Task List, for example).
 	 */
 	private StyleRange range;
+	private GridData gd;
 	 
 	//class ViewContentProvider implements IStructuredContentProvider {
 		//public void inputChanged(Viewer v, Object oldInput, Object newInput) {
@@ -124,12 +129,21 @@ public class SampleView extends ViewPart {
 	          
 		      parent = parent1;
 		      RowLayout rowlayout = new RowLayout();
-		      ScrolledComposite comp = new ScrolledComposite(parent.getParent(), SWT.V_SCROLL) ;
-		      parent.setSize(0, 0);
-		      parent.setParent(comp);
+		      final ScrolledComposite comp = new ScrolledComposite(parent, SWT.V_SCROLL) ;
+		      GridLayout layoutparent = new GridLayout();
+		      GridLayout layoutcomposite = new GridLayout();
+		      layoutparent.numColumns = 2 ;
+		      layoutcomposite.numColumns = 12 ;
+		     // parent.setSize(1000, parent.getSize().y);
 		      container = new StyledText(comp, 0);
-		      container.setSize(400, 400);
+		      container.setSize(400,200);
 		      comp.setContent(container);
+		      Composite composite = new Composite(parent ,SWT.SINGLE|SWT.BORDER);
+		      composite.setSize(500, 300);
+		      composite.setLocation(420 ,0);
+		      siblingsLabels label_and_text = new siblingsLabels(new String[]{"CBO ","DIT ", "NOC ","CS ","NOO ","NOA"}, composite);
+		      composite.setLayout(layoutcomposite);
+				//CBOtext.setLayoutData(gd);
 		      rowlayout.type = SWT.VERTICAL;
         IWorkspace work = ResourcesPlugin.getWorkspace();
         IResourceChangeListener listener = new IResourceChangeListener() {
@@ -162,6 +176,7 @@ public class SampleView extends ViewPart {
 					
 					Elements classes = doc.select("packagedElement[xmi:type=\"uml:Class\"]");
 					System.out.println("tamanho!" + classes.size());
+					
 					container.setText("");
 					container.setLineSpacing(3);
 					int lastchar = 0;
@@ -177,7 +192,7 @@ public class SampleView extends ViewPart {
 		        		Decision_color(2,cla.getNOC(),"\t NOC: ");
 		        		Decision_color(2,cla.getCBO(),"\t CBO: ");
 		        		Decision_color(2,cla.getDIT(),"\t  DIT: ");
-		        		Decision_color(2,cla.getCS(),"\t CS: ");	
+		        		Decision_color(2,cla.getCS(),"\t   CS: ");	
 		        		Decision_color(2,cla.getNOO(),"\t  NOO: ");	
 		        		Decision_color(2,cla.getNOA(),"\t  NOA: ");
 			        	 
@@ -188,10 +203,9 @@ public class SampleView extends ViewPart {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-        		
-        			
         		container.pack();
-        			
+					
+				
         			
         		
 			
@@ -220,8 +234,8 @@ public class SampleView extends ViewPart {
            };
            
         work.addResourceChangeListener(listener);
-        parent.setLayout(rowlayout);
-        
+        parent.setLayout(layoutparent);
+        comp.setLayout(rowlayout);
         
         container.append("DIT    -3\n");
         

@@ -1,4 +1,4 @@
-package jsoup;
+package umlmaster2.metrics;
 
 import java.util.HashMap;
 
