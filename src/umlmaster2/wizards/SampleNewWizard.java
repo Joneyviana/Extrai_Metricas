@@ -12,7 +12,7 @@ import org.eclipse.jface.operation.*;
 
 import umlmaster2.monitor.filenotation;
 import umlmaster2.monitor.subscribed;
-import umlmaster2.test.Testmonitor;
+
 import umlmaster2.views.*;
 
 import java.lang.reflect.InvocationTargetException;

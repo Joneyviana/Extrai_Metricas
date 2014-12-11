@@ -9,7 +9,9 @@ import umlmaster2.metrics.Classe;
 import umlmaster2.metrics.extendmetricas;
 import umlmaster2.monitor.*;
 
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.*;
 import org.eclipse.core.internal.events.ResourceDelta;
@@ -129,7 +131,10 @@ public class SampleView extends ViewPart {
 	          
 		      parent = parent1;
 		      RowLayout rowlayout = new RowLayout();
-		      final ScrolledComposite comp = new ScrolledComposite(parent, SWT.V_SCROLL) ;
+		      Label class_resultado = new Label(parent1, SWT.SINGLE);
+		      class_resultado.setText("Resultado Metricas");
+		      Composite composite = new Composite(parent ,SWT.SINGLE|SWT.BORDER);
+		      final ScrolledComposite comp = new ScrolledComposite(parent, SWT.V_SCROLL|SWT.BORDER) ;
 		      GridLayout layoutparent = new GridLayout();
 		      GridLayout layoutcomposite = new GridLayout();
 		      layoutparent.numColumns = 2 ;
@@ -138,12 +143,14 @@ public class SampleView extends ViewPart {
 		      container = new StyledText(comp, 0);
 		      container.setSize(400,200);
 		      comp.setContent(container);
-		      Composite composite = new Composite(parent ,SWT.SINGLE|SWT.BORDER);
+		      
 		      composite.setSize(500, 300);
 		      composite.setLocation(420 ,0);
 		      siblingsLabels label_and_text = new siblingsLabels(new String[]{"CBO ","DIT ", "NOC ","CS ","NOO ","NOA"}, composite);
 		      composite.setLayout(layoutcomposite);
 				//CBOtext.setLayoutData(gd);
+		      Button buton = new Button(parent, SWT.SINGLE);
+		      buton.setText("refresh");
 		      rowlayout.type = SWT.VERTICAL;
         IWorkspace work = ResourcesPlugin.getWorkspace();
         IResourceChangeListener listener = new IResourceChangeListener() {
@@ -204,7 +211,7 @@ public class SampleView extends ViewPart {
 					e.printStackTrace();
 				}
         		container.pack();
-					
+        		
 				
         			
         		
