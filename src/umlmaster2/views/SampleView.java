@@ -96,6 +96,7 @@ public class SampleView extends ViewPart {
 	 */
 	private StyleRange range;
 	private GridData gd;
+	private siblingsLabels label_and_text;
 	 
 	//class ViewContentProvider implements IStructuredContentProvider {
 		//public void inputChanged(Viewer v, Object oldInput, Object newInput) {
@@ -146,10 +147,10 @@ public class SampleView extends ViewPart {
 		      
 		      composite.setSize(500, 300);
 		      composite.setLocation(420 ,0);
-		      siblingsLabels label_and_text = new siblingsLabels(new String[]{"CBO ","DIT ", "NOC ","CS ","NOO ","NOA"}, composite);
+		      label_and_text = new siblingsLabels(new String[]{"CBO","DIT", "NOC","CS","NOO","NOA"}, composite);
 		      composite.setLayout(layoutcomposite);
 				//CBOtext.setLayoutData(gd);
-		      Button buton = new Button(parent, SWT.SINGLE);
+		      Button buton = new Button(parent, SWT.PUSH);
 		      buton.setText("refresh");
 		      rowlayout.type = SWT.VERTICAL;
         IWorkspace work = ResourcesPlugin.getWorkspace();
@@ -196,12 +197,12 @@ public class SampleView extends ViewPart {
 		        		}
 		        		    else 
 		        		setcolorRangeLine(color, "\n"+cla.getName()+"\n");
-		        		Decision_color(2,cla.getNOC(),"\t NOC: ");
-		        		Decision_color(2,cla.getCBO(),"\t CBO: ");
-		        		Decision_color(2,cla.getDIT(),"\t  DIT: ");
-		        		Decision_color(2,cla.getCS(),"\t   CS: ");	
-		        		Decision_color(2,cla.getNOO(),"\t  NOO: ");	
-		        		Decision_color(2,cla.getNOA(),"\t  NOA: ");
+		        		Decision_color(cla.getNOC(),"NOC");
+		        		Decision_color(cla.getCBO(),"CBO");
+		        		Decision_color(cla.getDIT(),"DIT");
+		        		Decision_color(cla.getCS(),"CS");	
+		        		Decision_color(cla.getNOO(),"NOO");	
+		        		Decision_color(cla.getNOA(),"NOA");
 			        	 
 		        		 
 		        			
@@ -269,7 +270,7 @@ public class SampleView extends ViewPart {
 		 container.setEditable(false);
 		container.setCaret(null);;
 	
-		container.setBackground(new Color(device , 10,10,10));
+		
 	}      
         
 	    
@@ -284,12 +285,12 @@ public class SampleView extends ViewPart {
 
 	
 
-	protected void Decision_color(int restricao, int valor  , String string) {
-		if (valor>=restricao) 
-    		setcolorRangeLine(color1 ,string + valor);
+	protected void Decision_color( int valor  , String string) {
+		if (valor>=label_and_text.getvalor_referencia(string)) 
+    		setcolorRangeLine(color1 ,"\t  "+string +": "+ valor);
     	     
     		else 
-    			setcolorRangeLine(color ,string+ valor);
+    			setcolorRangeLine(color ,"\t  "+string +": "+ valor);
 		
 	}
 	protected void setcolorRangeLine(Color color2, String line) {

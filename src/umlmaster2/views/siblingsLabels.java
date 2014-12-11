@@ -19,12 +19,23 @@ public siblingsLabels(String[] texts, Composite comp){
 	 for (String text:texts){
 		 item  = new Label(comp ,  SWT.SINGLE|SWT.UP);
 		 Text texte = new Text(comp, SWT.BORDER | SWT.SINGLE|SWT.UP);
-		 item.setText(text);
+		 item.setText(text+" ");
 		 items.put(text, texte);
      }
 }
 public int getvalor_referencia(String text){
-	Integer.parseInt(items.get(text).getText());
+	System.out.print("merda");
+	if (items.containsKey(text)){
+		System.out.print("merda");
+		try {
+		
+		return Integer.parseInt(items.get(text).getText());
+	
+	}
+	catch(Exception e){
+		System.out.print("digite um numero");
+	}
+	}
 	return 2;
 }
 }

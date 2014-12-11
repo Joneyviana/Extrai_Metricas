@@ -12,7 +12,6 @@ import org.eclipse.jface.operation.*;
 
 import umlmaster2.monitor.filenotation;
 import umlmaster2.monitor.subscribed;
-
 import umlmaster2.views.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -31,6 +30,7 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.internal.ViewSite;
 import org.eclipse.core.resources.ResourcesPlugin;
 
+import adiciona_metricas.wizards.SampleNewWizardPage;
 import umlmaster2.views.SampleView;
 /**
  * This is a sample new wizar. Its role is to create a new file 
